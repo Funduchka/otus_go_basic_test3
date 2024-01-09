@@ -11,7 +11,39 @@ type User struct {
 	Name     string
 	LastName string
 	Age      int
-	Role     Role
+	Role     struct {
+		Name        string
+		Permissions []string
+	}
+}
+
+func NewUser() User {
+	return User{
+		Role: struct {
+			Name        string
+			Permissions []string
+		}{
+			Name:        "admin",
+			Permissions: []string{"read", "write"},
+		},
+	}
+}
+
+func SaveUser(userToSave User) error {
+	if mySuperError := ValidateUser(userToSave); mySuperError != nil {
+		return mySuperError
+	}
+
+	// save user to DB
+	return nil
+}
+
+func ValidateUser(me User) error {
+	if me.Age > 100 {
+		return fmt.Errorf("user is too old")
+	}
+
+	return nil
 }
 
 type Role struct {
@@ -26,20 +58,4 @@ func Anon() {
 		Age:      30,
 	}
 	fmt.Println(user1)
-}
-
-func SaveUser(user User) error {
-	if err := ValidateUser(user); err != nil {
-		return err
-	}
-
-	// save user to DB
-	return nil
-}
-
-func ValidateUser(user User) error {
-	if user.Age > 100 {
-		return fmt.Errorf("User is too old")
-	}
-	return nil
 }
